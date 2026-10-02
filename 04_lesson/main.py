@@ -1,19 +1,22 @@
-from product import Product
-from order import Order
-from customer import Customer
+from store import Store
 
-toy = Product("Мягкая игрушка", "Игрушки", 500, 10)
-lego = Product("Конструктор", "Игрушки", 1000, 5)
+store = Store()
 
-order = Order()
+store.load_from_files()
 
-order.add_product(toy)
-order.add_product(lego)
+print("Товары магазина:")
 
-print("Сумма заказа:", order.calculate_total_price())
+for product in store.products:
+    print(product.name, "-", product.quantity, "шт.")
 
-customer = Customer("Виктор", "hastos30@gmail.com")
+print()
 
-customer.add_order(order)
+print("Клиенты магазина:")
 
-print(customer.name, "имеет заказов:", len(customer.orders))
+for customer in store.customers:
+    print(customer.name, customer.email)
+
+store.products[0].change_quantity(-2)
+store.products[1].change_price(1200)
+
+store.save_to_files()
