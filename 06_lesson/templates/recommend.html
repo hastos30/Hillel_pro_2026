@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Порекомедовать книгу</h1>
+
+    {% if error %}
+        <p>{{ error }}</p>
+    {% elif title %}
+        <p>Спасибо за рекомендацию книги: {{ title }}</p>
+    {% endif %}
+
+    <form action="/recommend" method="post">
+        <label for="title">Название книги:</label>
+        <input id="title" name="title" type="text">
+
+        <button type="submit">Отправить</button>
+    </form>
+{% endblock %}
