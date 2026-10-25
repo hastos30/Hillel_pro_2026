@@ -1,4 +1,15 @@
-/04_lesson/__pycache__
-/06_lesson/__pycache__
-/06_lesson/.venv/
-/06_lesson/*.pyc
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Django
+db.sqlite3
+.env
+
+# IDE
+.vscode/
+
+# OS
+.DS_Store
