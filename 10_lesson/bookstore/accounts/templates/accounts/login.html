@@ -1,0 +1,68 @@
+{% extends "catalog/base.html" %}
+
+{% block title %}Вхід | BookStore{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-md-7 col-lg-5">
+
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+
+                <h1 class="h3 text-center mb-4">
+                    Вхід до акаунта
+                </h1>
+
+                {% if form.errors %}
+                <div class="alert alert-danger">
+                    Неправильне ім'я користувача або пароль.
+                </div>
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% if next %}
+                    <input type="hidden" name="next" value="{{ next }}">
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">
+                            Ім'я користувача
+                        </label>
+
+                        <input type="text" name="username" id="id_username" class="form-control"
+                            value="{{ form.username.value|default_if_none:'' }}" autocomplete="username" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_password" class="form-label">
+                            Пароль
+                        </label>
+
+                        <input type="password" name="password" id="id_password" class="form-control"
+                            autocomplete="current-password" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        Увійти
+                    </button>
+                </form>
+
+                <hr>
+
+                <p class="text-center mb-0">
+                    Ще немає акаунта?
+                    <a href="{% url 'accounts:register' %}">
+                        Зареєструватися
+                    </a>
+                </p>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
