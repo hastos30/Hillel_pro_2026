@@ -1,0 +1,70 @@
+{% extends "catalog/base.html" %}
+
+{% block title %}Реєстрація | BookStore{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-md-7 col-lg-5">
+
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+
+                <h1 class="h3 text-center mb-4">
+                    Реєстрація
+                </h1>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                    {% endif %}
+
+                    {% for field in form %}
+                    <div class="mb-3">
+
+                        <label for="{{ field.id_for_label }}" class="form-label">
+                            {{ field.label }}
+                        </label>
+
+                        {{ field }}
+
+                        {% if field.help_text %}
+                        <div class="form-text">
+                            {{ field.help_text }}
+                        </div>
+                        {% endif %}
+
+                        {% for error in field.errors %}
+                        <div class="text-danger small mt-1">
+                            {{ error }}
+                        </div>
+                        {% endfor %}
+
+                    </div>
+                    {% endfor %}
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        Зареєструватися
+                    </button>
+                </form>
+
+                <hr>
+
+                <p class="text-center mb-0">
+                    Вже маєте акаунт?
+                    <a href="{% url 'accounts:login' %}">
+                        Увійти
+                    </a>
+                </p>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

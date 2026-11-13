@@ -1,4 +1,7 @@
-from django.contrib.auth.mixins import UserPassesTestMixin
+from django.contrib.auth.mixins import (
+    LoginRequiredMixin,
+    PermissionRequiredMixin,
+)
 from django.db.models import Q
 from django.urls import reverse_lazy
 from django.views.generic import (
@@ -10,11 +13,6 @@ from django.views.generic import (
 )
 
 from .models import Book, Category
-
-
-class StaffRequiredMixin(UserPassesTestMixin):
-    def test_func(self):
-        return self.request.user.is_authenticated and self.request.user.is_staff
 
 
 class BookListView(ListView):
@@ -45,10 +43,12 @@ class BookListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
         context["categories"] = Category.objects.all()
         context["search"] = self.request.GET.get("search", "")
         context["selected_category"] = self.request.GET.get("category", "")
         context["selected_availability"] = self.request.GET.get("availability", "")
+
         return context
 
 
@@ -61,7 +61,11 @@ class BookDetailView(DetailView):
         return Book.objects.select_related("category")
 
 
-class BookCreateView(StaffRequiredMixin, CreateView):
+class BookCreateView(
+    LoginRequiredMixin,
+    PermissionRequiredMixin,
+    CreateView,
+):
     model = Book
     template_name = "catalog/book_form.html"
     fields = [
@@ -72,10 +76,16 @@ class BookCreateView(StaffRequiredMixin, CreateView):
         "stock",
         "category",
     ]
+
+    permission_required = "catalog.add_book"
     success_url = reverse_lazy("catalog:book_list")
 
 
-class BookUpdateView(StaffRequiredMixin, UpdateView):
+class BookUpdateView(
+    LoginRequiredMixin,
+    PermissionRequiredMixin,
+    UpdateView,
+):
     model = Book
     template_name = "catalog/book_form.html"
     fields = [
@@ -86,10 +96,18 @@ class BookUpdateView(StaffRequiredMixin, UpdateView):
         "stock",
         "category",
     ]
+
+    permission_required = "catalog.change_book"
     success_url = reverse_lazy("catalog:book_list")
 
 
-class BookDeleteView(StaffRequiredMixin, DeleteView):
+class BookDeleteView(
+    LoginRequiredMixin,
+    PermissionRequiredMixin,
+    DeleteView,
+):
     model = Book
     template_name = "catalog/book_confirm_delete.html"
+
+    permission_required = "catalog.delete_book"
     success_url = reverse_lazy("catalog:book_list")
