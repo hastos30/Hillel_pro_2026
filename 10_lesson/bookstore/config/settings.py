@@ -12,9 +12,16 @@ load_dotenv(BASE_DIR / ".env")
 # Security
 SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
 
-DEBUG = True
+DEBUG = os.getenv("DJANGO_DEBUG", "False").lower() in (
+    "true",
+    "1",
+    "yes",
+)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost",
+]
 
 
 # Applications
@@ -25,13 +32,12 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    # Local applications
     "accounts",
     "catalog",
 ]
 
 if DEBUG:
-    INSTALLED_APPS += ["debug_toolbar"]
+    INSTALLED_APPS.append("debug_toolbar")
 
 
 # Authentication
@@ -51,7 +57,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    # Custom middleware
     "config.middleware.RequestTimingMiddleware",
 ]
 
@@ -94,12 +99,49 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 
 # Database
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+# Docker: PostgreSQL
+# Local development: SQLite
+DB_HOST = os.getenv("DB_HOST")
+
+if DB_HOST:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.environ["POSTGRES_DB"],
+            "USER": os.environ["POSTGRES_USER"],
+            "PASSWORD": os.environ["POSTGRES_PASSWORD"],
+            "HOST": DB_HOST,
+            "PORT": os.getenv("DB_PORT", "5432"),
+            "CONN_MAX_AGE": 60,
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
+
+
+# Cache
+if DB_HOST:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.redis.RedisCache",
+            "LOCATION": os.getenv(
+                "REDIS_URL",
+                "redis://redis:6379/0",
+            ),
+        }
+    }
+else:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "LOCATION": "bookstore-local-cache",
+        }
+    }
 
 
 # Password validation
@@ -132,6 +174,7 @@ USE_TZ = True
 
 # Static files
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 
 # Default primary key
@@ -158,7 +201,7 @@ LOGGING = {
             "level": "INFO",
         },
         "file": {
-            "class": ("logging.handlers.RotatingFileHandler"),
+            "class": "logging.handlers.RotatingFileHandler",
             "filename": str(LOG_DIR / "bookstore.log"),
             "maxBytes": 1_048_576,
             "backupCount": 3,

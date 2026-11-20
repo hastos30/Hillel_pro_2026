@@ -9,6 +9,7 @@ __pycache__/
 db.sqlite3
 .env
 backups/
+staticfiles/
 
 # Logging
 *.log
