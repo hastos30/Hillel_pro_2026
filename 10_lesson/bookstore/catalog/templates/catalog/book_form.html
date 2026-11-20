@@ -1,0 +1,73 @@
+{% extends "catalog/base.html" %}
+
+{% block title %}
+{% if object %}Редагування книги{% else %}Додавання книги{% endif %}
+| BookStore
+{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+
+        <div class="card">
+            <div class="card-body p-4">
+
+                <h1 class="mb-4">
+                    {% if object %}
+                    Редагування книги
+                    {% else %}
+                    Додавання книги
+                    {% endif %}
+                </h1>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                    {% endif %}
+
+                    {% for field in form %}
+                    <div class="mb-3">
+                        <label for="{{ field.id_for_label }}" class="form-label">
+                            {{ field.label }}
+                        </label>
+
+                        {{ field }}
+
+                        {% if field.help_text %}
+                        <div class="form-text">
+                            {{ field.help_text }}
+                        </div>
+                        {% endif %}
+
+                        {% for error in field.errors %}
+                        <div class="text-danger small">
+                            {{ error }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            Зберегти
+                        </button>
+
+                        <a href="{% url 'catalog:book_list' %}" class="btn btn-outline-secondary">
+                            Скасувати
+                        </a>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

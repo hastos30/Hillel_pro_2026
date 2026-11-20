@@ -1,3 +1,4 @@
+
 # Python
 .venv/
 __pycache__/
@@ -7,6 +8,11 @@ __pycache__/
 # Django
 db.sqlite3
 .env
+backups/
+
+# Logging
+*.log
+*.log.*
 
 # IDE
 .vscode/
